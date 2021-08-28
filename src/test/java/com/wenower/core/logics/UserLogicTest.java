@@ -1,14 +1,13 @@
 package com.wenower.core.logics;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.wenower.core.Database;
-import com.wenower.core.db.tables.records.UsersRecord;
+import com.wenower.core.db.tables.Users;
 import java.sql.SQLException;
-import org.jooq.TruncateIdentityStep;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import com.wenower.core.db.tables.Users;
 public class UserLogicTest {
 
   @BeforeAll

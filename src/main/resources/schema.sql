@@ -1,21 +1,23 @@
 create table users
 (
-    id    varchar primary key,
-    phone varchar unique
-);
-
-create table contacts
-(
-    id            varchar primary key,
-    user_id       varchar,
-    contact_name  varchar,
-    contact_phone varchar
+    id           varchar primary key,
+    username     varchar unique,
+    phone        varchar unique,
+    email        varchar unique,
+    name         varchar,
+    active       boolean,
+    activated_at timestamp,
+    created_at   timestamp
 );
 
 create table events
 (
-    id      varchar primary key,
-    user_id varchar
+    id           varchar primary key,
+    user_id      varchar,
+    type         varchar check (type in ('indoor', 'outdoor', 'remote')),
+    finalised    boolean,
+    finalised_at timestamp,
+    create_at    timestamp
 );
 
 create table invitations
@@ -24,33 +26,53 @@ create table invitations
     event_id   varchar,
     user_id    varchar,
     invitee_id varchar,
-    accepted   boolean
+    rsvp       varchar check (rsvp in ('yes', 'maybe', 'no')),
+    note       varchar,
+    valid      boolean,
+    expired_at timestamp,
+    create_at  timestamp
 );
 
 create table members
 (
-    id       varchar primary key,
-    event_id varchar,
-    user_id  varchar,
-    role     varchar check (role in ('host', 'guest'))
+    id        varchar primary key,
+    event_id  varchar,
+    user_id   varchar,
+    role      varchar check (role in ('owner', 'host', 'guest')),
+    create_at timestamp
 );
 
-create table suggestions
+create table polls
 (
-    id       varchar primary key,
-    event_id varchar,
-    user_id  varchar,
-    type     varchar check (type in ('time', 'place', 'equipment')),
-    value    varchar
+    id           varchar primary key,
+    event_id     varchar,
+    type         varchar check (type in ('time', 'place')),
+    value        varchar,
+    finalised    boolean,
+    finalised_at timestamp,
+    create_at    timestamp
 );
 
-create table reactions
+create table votes
 (
-    id            varchar primary key,
-    event_id      varchar,
-    suggestion_id varchar,
-    user_id       varchar,
-    accepted      boolean
+    id        varchar primary key,
+    event_id  varchar,
+    poll_id   varchar,
+    user_id   varchar,
+    vote      varchar check (vote in ('up', 'down')),
+    note      varchar,
+    create_at timestamp
+);
+
+create table checklists
+(
+    id          varchar primary key,
+    event_id    varchar,
+    user_id     varchar,
+    item        varchar,
+    assignee_id varchar,
+    note        varchar,
+    create_at   timestamp
 );
 
 create table messages
