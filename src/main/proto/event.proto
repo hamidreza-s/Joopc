@@ -1,0 +1,21 @@
+syntax = "proto3";
+option java_multiple_files = true;
+package com.wenower.core.proto;
+
+enum Type {
+    INDOOR = 0;
+    OUTDOOR = 1;
+    REMOTE = 2;
+}
+
+message CreateReq {
+    Type type = 1;
+}
+
+message CreateRes {
+    string id = 1;
+}
+
+service event {
+    rpc create(CreateReq) returns (CreateRes);
+}

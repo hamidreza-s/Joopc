@@ -1,16 +1,20 @@
 package com.wenower.core.services;
 
+import static io.grpc.stub.MetadataUtils.newAttachHeadersInterceptor;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.wenower.core.proto.CoreGrpc;
 import com.wenower.core.proto.Packet;
+import com.wenower.core.services.interceptors.Authenticator;
+import io.grpc.Metadata;
+import io.grpc.ServerInterceptors;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
+import io.grpc.testing.GrpcCleanupRule;
 import java.sql.Timestamp;
 import java.time.Instant;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import io.grpc.testing.GrpcCleanupRule;
 
 public class CoreServiceTest {
 
@@ -21,8 +25,15 @@ public class CoreServiceTest {
   void pingTest() throws Exception {
     var serverName = InProcessServerBuilder.generateName();
     grpcCleanup.register(
-        InProcessServerBuilder.forName(serverName).directExecutor().addService(new CoreService())
-            .build().start());
+        InProcessServerBuilder
+            .forName(serverName)
+            .directExecutor()
+            .addService(ServerInterceptors.intercept(new CoreService(), new Authenticator()))
+            .build().start()
+    );
+
+    var header = new Metadata();
+    header.put(Metadata.Key.of("JWT-Token", Metadata.ASCII_STRING_MARSHALLER), "todo-token-content");
 
     var blockingStub = CoreGrpc.newBlockingStub(
         grpcCleanup.register(InProcessChannelBuilder.forName(serverName).directExecutor().build()));
@@ -33,7 +44,7 @@ public class CoreServiceTest {
         .setTimestamp(Timestamp.from(Instant.now()).toString())
         .build();
 
-    var reply = blockingStub.ping(packet);
+    var reply = blockingStub.withInterceptors(newAttachHeadersInterceptor(header)).ping(packet);
 
     assertEquals("pong", reply.getPayload());
   }

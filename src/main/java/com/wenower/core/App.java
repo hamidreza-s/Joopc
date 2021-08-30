@@ -1,17 +1,24 @@
 package com.wenower.core;
 
 import com.wenower.core.services.CoreService;
+import com.wenower.core.services.interceptors.Authenticator;
 import io.grpc.ServerBuilder;
+import io.grpc.ServerInterceptors;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 public class App {
 
+  private static final Logger logger = Logger.getLogger(App.class.getName());
+  private static final int PORT = 9090;
+
   public static void main(String[] args) throws IOException, InterruptedException {
     var server = ServerBuilder
-        .forPort(8080)
-        .addService(new CoreService()).build();
+        .forPort(PORT)
+        .addService(ServerInterceptors.intercept(new CoreService(), new Authenticator()))
+        .build();
 
-    System.out.println("GRPC server started on port 8080 ...");
+    logger.info("Server started, listening on " + PORT);
     server.start();
     server.awaitTermination();
   }
