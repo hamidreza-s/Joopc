@@ -2,6 +2,7 @@ create table users
 (
     id           varchar primary key,
     username     varchar unique,
+    password     varchar unique,
     phone        varchar unique,
     email        varchar unique,
     name         varchar,
