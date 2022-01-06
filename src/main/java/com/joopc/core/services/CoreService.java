@@ -1,7 +1,7 @@
-package com.wenower.core.services;
+package com.joopc.core.services;
 
-import com.wenower.core.proto.CoreGrpc.CoreImplBase;
-import com.wenower.core.proto.Packet;
+import com.joopc.core.proto.CoreGrpc.CoreImplBase;
+import com.joopc.core.proto.Packet;
 import io.grpc.stub.StreamObserver;
 import java.sql.Timestamp;
 import java.time.Instant;

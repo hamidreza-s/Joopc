@@ -1,4 +1,4 @@
-package com.wenower.core;
+package com.joopc.core;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -12,9 +12,9 @@ public class Database {
 
   private static Database instance;
   private Connection connection;
-  private String url = "jdbc:postgresql://localhost:5432/wenower";
-  private String username = "wenower";
-  private String password = "wenower";
+  private String url = "jdbc:postgresql://localhost:5432/joopc";
+  private String username = "joopc";
+  private String password = "secret";
 
   private Database() throws SQLException {
     try {

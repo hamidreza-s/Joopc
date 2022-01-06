@@ -1,6 +1,6 @@
 syntax = "proto3";
 option java_multiple_files = true;
-package com.wenower.core.proto;
+package com.joopc.core.proto;
 
 message Packet {
     string payload = 1;

@@ -1,7 +1,7 @@
-package com.wenower.core;
+package com.joopc.core;
 
-import com.wenower.core.services.CoreService;
-import com.wenower.core.services.interceptors.Authenticator;
+import com.joopc.core.services.CoreService;
+import com.joopc.core.services.interceptors.Authenticator;
 import io.grpc.ServerBuilder;
 import io.grpc.ServerInterceptors;
 import java.io.IOException;

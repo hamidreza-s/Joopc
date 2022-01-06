@@ -1,8 +1,8 @@
-package com.wenower.core.logics;
+package com.joopc.core.logics;
 
-import com.wenower.core.Database;
-import com.wenower.core.db.tables.Users;
-import com.wenower.core.db.tables.records.UsersRecord;
+import com.joopc.core.Database;
+import com.joopc.core.db.tables.Users;
+import com.joopc.core.db.tables.records.UsersRecord;
 import java.sql.SQLException;
 import java.util.UUID;
 

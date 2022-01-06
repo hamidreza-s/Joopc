@@ -1,4 +1,4 @@
-package com.wenower.core.services.interceptors;
+package com.joopc.core.services.interceptors;
 
 import io.grpc.ForwardingServerCall.SimpleForwardingServerCall;
 import io.grpc.Metadata;

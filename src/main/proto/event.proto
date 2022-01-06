@@ -1,6 +1,6 @@
 syntax = "proto3";
 option java_multiple_files = true;
-package com.wenower.core.proto;
+package com.joopc.core.proto;
 
 enum Type {
     INDOOR = 0;

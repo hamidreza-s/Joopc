@@ -1,9 +1,9 @@
-package com.wenower.core.logics;
+package com.joopc.core.logics;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.wenower.core.Database;
-import com.wenower.core.db.tables.Users;
+import com.joopc.core.Database;
+import com.joopc.core.db.tables.Users;
 import java.sql.SQLException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;

@@ -1,11 +1,11 @@
-package com.wenower.core.services;
+package com.joopc.core.services;
 
 import static io.grpc.stub.MetadataUtils.newAttachHeadersInterceptor;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.wenower.core.proto.CoreGrpc;
-import com.wenower.core.proto.Packet;
-import com.wenower.core.services.interceptors.Authenticator;
+import com.joopc.core.services.interceptors.Authenticator;
+import com.joopc.core.proto.CoreGrpc;
+import com.joopc.core.proto.Packet;
 import io.grpc.Metadata;
 import io.grpc.ServerInterceptors;
 import io.grpc.inprocess.InProcessChannelBuilder;
