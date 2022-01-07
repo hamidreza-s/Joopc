@@ -36,9 +36,7 @@ public class CoreService extends CoreImplBase {
                                 observer.onError(Status.INTERNAL.asException());
                             }
                         },
-                        () -> {
-                            observer.onError(Status.NOT_FOUND.asException());
-                        });
+                        () -> observer.onError(Status.NOT_FOUND.asException()));
     }
 
     @Override

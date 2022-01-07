@@ -18,7 +18,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 
@@ -31,7 +30,7 @@ public class CoreServiceTest {
     public final GrpcCleanupRule grpcCleanup = new GrpcCleanupRule();
 
     @BeforeAll
-    static void cleanDatabase() throws SQLException {
+    static void cleanDatabase() {
         Database.getContext().truncate(Users.USERS).execute();
     }
 
@@ -50,17 +49,16 @@ public class CoreServiceTest {
         var blockingStub = CoreGrpc.newBlockingStub(
                 grpcCleanup.register(InProcessChannelBuilder.forName(serverName).directExecutor().build()));
 
-        UserLogic.create("00981111111111").ifPresent(user -> {
-            var authReq = AuthReq
-                    .newBuilder()
-                    .setUsername(user.getUsername())
-                    .setPassword(user.getPassword())
-                    .build();
+        var user = UserLogic.create("00981111111111");
+        var authReq = AuthReq
+                .newBuilder()
+                .setUsername(user.getUsername())
+                .setPassword(user.getPassword())
+                .build();
 
-            var reply = blockingStub.auth(authReq);
+        var reply = blockingStub.auth(authReq);
 
-            assertFalse(reply.getToken().isEmpty());
-        });
+        assertFalse(reply.getToken().isEmpty());
     }
 
     @Test
@@ -86,6 +84,7 @@ public class CoreServiceTest {
                 .build();
 
         try {
+            // noinspection ResultOfMethodCallIgnored
             blockingStub.auth(authReq);
         } catch (StatusRuntimeException e) {
             assertEquals(e.getStatus(), Status.NOT_FOUND);

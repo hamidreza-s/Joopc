@@ -40,7 +40,13 @@ public class Database {
         return instance;
     }
 
-    public static DSLContext getContext() throws SQLException {
-        return DSL.using(Database.getInstance().getConnection(), SQLDialect.POSTGRES);
+    public static DSLContext getContext() {
+        try {
+            return DSL.using(Database.getInstance().getConnection(), SQLDialect.POSTGRES);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        System.exit(1);
+        return null;
     }
 }

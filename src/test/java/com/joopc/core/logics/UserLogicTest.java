@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class UserLogicTest {
 
     @BeforeAll
-    static void cleanDatabase() throws SQLException {
+    static void cleanDatabase() {
         Database.getContext().truncate(Users.USERS).execute();
     }
 
@@ -23,10 +23,10 @@ public class UserLogicTest {
     @DisplayName("Check user creation process")
     void userCreationTest() throws SQLException {
         var createdUser = UserLogic.create("00981111111111");
-        var fetchedUser = UserLogic.fetch(createdUser.map(UsersRecord::getId).orElse(""));
+        var fetchedUser = UserLogic.fetch(createdUser.getId());
         assertTrue(fetchedUser.isPresent());
         assertEquals(
-                createdUser.map(UsersRecord::getId).orElse(""),
+                createdUser.getId(),
                 fetchedUser.map(UsersRecord::getId).orElse("")
         );
     }
