@@ -5,6 +5,7 @@ import com.joopc.core.db.tables.Users;
 import com.joopc.core.logics.UserLogic;
 import com.joopc.core.proto.AuthReq;
 import com.joopc.core.proto.CoreGrpc;
+import com.joopc.core.proto.CoreGrpc.CoreBlockingStub;
 import com.joopc.core.proto.Packet;
 import com.joopc.core.services.interceptors.Authenticator;
 import io.grpc.Metadata;
@@ -22,22 +23,19 @@ import java.sql.Timestamp;
 import java.time.Instant;
 
 import static io.grpc.stub.MetadataUtils.newAttachHeadersInterceptor;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CoreServiceTest {
 
-    public final GrpcCleanupRule grpcCleanup = new GrpcCleanupRule();
+    public static final GrpcCleanupRule grpcCleanup = new GrpcCleanupRule();
+    public static final String serverName = InProcessServerBuilder.generateName();
+    public static final CoreBlockingStub blockingStub = CoreGrpc.newBlockingStub(
+            grpcCleanup.register(InProcessChannelBuilder.forName(serverName).directExecutor().build()));
+
 
     @BeforeAll
-    static void cleanDatabase() {
+    static void cleanDatabase() throws Exception {
         Database.getContext().truncate(Users.USERS).execute();
-    }
-
-    @Test
-    @DisplayName("Test auth service with happy path")
-    void authHappyTest() throws Exception {
-        var serverName = InProcessServerBuilder.generateName();
         grpcCleanup.register(
                 InProcessServerBuilder
                         .forName(serverName)
@@ -45,10 +43,11 @@ public class CoreServiceTest {
                         .addService(ServerInterceptors.intercept(new CoreService(), new Authenticator()))
                         .build().start()
         );
+    }
 
-        var blockingStub = CoreGrpc.newBlockingStub(
-                grpcCleanup.register(InProcessChannelBuilder.forName(serverName).directExecutor().build()));
-
+    @Test
+    @DisplayName("Test auth service with happy path")
+    void authHappyTest() {
         var user = UserLogic.create("00981111111111");
         var authReq = AuthReq
                 .newBuilder()
@@ -63,51 +62,22 @@ public class CoreServiceTest {
 
     @Test
     @DisplayName("Test auth service with unhappy path")
-    void authUnhappyTest() throws Exception {
-        var serverName = InProcessServerBuilder.generateName();
-        grpcCleanup.register(
-                InProcessServerBuilder
-                        .forName(serverName)
-                        .directExecutor()
-                        .addService(ServerInterceptors.intercept(new CoreService(), new Authenticator()))
-                        .build().start()
-        );
-
-        var blockingStub = CoreGrpc.newBlockingStub(
-                grpcCleanup.register(InProcessChannelBuilder.forName(serverName).directExecutor().build()));
-
-
+    void authUnhappyTest() {
         var authReq = AuthReq
                 .newBuilder()
                 .setUsername("NOT-EXISTED-USERNAME")
                 .setPassword("NOT-EXISTED-PASSWORD")
                 .build();
 
-        try {
-            // noinspection ResultOfMethodCallIgnored
-            blockingStub.auth(authReq);
-        } catch (StatusRuntimeException e) {
-            assertEquals(e.getStatus(), Status.NOT_FOUND);
-        }
+        var exception = assertThrows(StatusRuntimeException.class, () -> blockingStub.auth(authReq));
+        assertEquals(exception.getStatus(), Status.NOT_FOUND);
     }
 
     @Test
     @DisplayName("Test ping service")
-    void pingTest() throws Exception {
-        var serverName = InProcessServerBuilder.generateName();
-        grpcCleanup.register(
-                InProcessServerBuilder
-                        .forName(serverName)
-                        .directExecutor()
-                        .addService(ServerInterceptors.intercept(new CoreService(), new Authenticator()))
-                        .build().start()
-        );
-
+    void pingTest() {
         var header = new Metadata();
         header.put(Metadata.Key.of("JWT-Token", Metadata.ASCII_STRING_MARSHALLER), "JWT-Token-Value");
-
-        var blockingStub = CoreGrpc.newBlockingStub(
-                grpcCleanup.register(InProcessChannelBuilder.forName(serverName).directExecutor().build()));
 
         var packet = Packet
                 .newBuilder()
