@@ -76,11 +76,11 @@ public class CoreServiceTest {
     }
 
     @Test
-    @DisplayName("Test ping service")
-    void pingTest() {
+    @DisplayName("Test ping service with happy path")
+    void pingHappyTest() {
         var header = new Metadata();
         var token = Authenticator.createToken(user);
-        header.put(Authenticator.tokenKey, token);
+        header.put(Authenticator.headerTokenKey, token);
 
         var packet = Packet
                 .newBuilder()
@@ -90,6 +90,23 @@ public class CoreServiceTest {
 
         var reply = blockingStub.withInterceptors(newAttachHeadersInterceptor(header)).ping(packet);
         assertEquals("pong", reply.getPayload());
+    }
+
+    @Test
+    @DisplayName("Test ping service with unhappy path")
+    void pingUnhappyTest() {
+        var header = new Metadata();
+        var token = Authenticator.createToken(user);
+        header.put(Authenticator.headerTokenKey, token + "SOMETHING-WRONG");
+
+        var packet = Packet
+                .newBuilder()
+                .setPayload("ping")
+                .setTimestamp(Timestamp.from(Instant.now()).toString())
+                .build();
+
+        var exception = assertThrows(StatusRuntimeException.class, () -> blockingStub.ping(packet));
+        assertEquals(exception.getStatus(), Status.UNAUTHENTICATED);
     }
 
 }

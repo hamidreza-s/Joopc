@@ -3,21 +3,21 @@ option java_multiple_files = true;
 package com.joopc.core.proto;
 
 message AuthReq {
-    string username = 1;
-    string password = 2;
+  string username = 1;
+  string password = 2;
 }
 
 message AuthRes {
-    string token = 1;
-    string timestamp = 2;
+  string token = 1;
+  string timestamp = 2;
 }
 
 message Packet {
-    string payload = 1;
-    string timestamp = 2;
+  string payload = 1;
+  string timestamp = 2;
 }
 
 service Core {
-    rpc auth(AuthReq) returns (AuthRes);
-    rpc ping(Packet) returns (Packet);
+  rpc auth(AuthReq) returns (AuthRes);
+  rpc ping(Packet) returns (Packet);
 }

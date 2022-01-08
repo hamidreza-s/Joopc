@@ -34,7 +34,11 @@ public class CoreService extends CoreImplBase {
 
     @Override
     public void ping(Packet req, StreamObserver<Packet> observer) {
-
+        /*
+         * The Authenticator.getClaims() returns the JWT token claims
+         * It returns an Optional<Claims> which has value when the JWT
+         * token is defined and valid.
+         */
         var res = Packet.newBuilder()
                 .setPayload("pong")
                 .setTimestamp(Timestamp.from(Instant.now()).toString())
