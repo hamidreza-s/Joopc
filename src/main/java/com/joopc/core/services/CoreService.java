@@ -1,13 +1,11 @@
 package com.joopc.core.services;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTCreationException;
 import com.joopc.core.logics.UserLogic;
 import com.joopc.core.proto.AuthReq;
 import com.joopc.core.proto.AuthRes;
 import com.joopc.core.proto.CoreGrpc.CoreImplBase;
 import com.joopc.core.proto.Packet;
+import com.joopc.core.services.interceptors.Authenticator;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 
@@ -21,20 +19,15 @@ public class CoreService extends CoreImplBase {
         UserLogic
                 .fetch(req.getUsername(), req.getPassword())
                 .ifPresentOrElse(user -> {
-                            try {
-                                // TODO: put JWT-SECRET in config file
-                                var algorithm = Algorithm.HMAC256("JWT-SECRET");
-                                var token = JWT.create().withIssuer(user.getName()).sign(algorithm);
-                                AuthRes res = AuthRes.newBuilder()
-                                        .setToken(token)
-                                        .setTimestamp(Timestamp.from(Instant.now()).toString())
-                                        .build();
+                            var token = Authenticator.createToken(user);
+                            var res = AuthRes.newBuilder()
+                                    .setToken(token)
+                                    .setTimestamp(Timestamp.from(Instant.now()).toString())
+                                    .build();
 
-                                observer.onNext(res);
-                                observer.onCompleted();
-                            } catch (JWTCreationException ex) {
-                                observer.onError(Status.INTERNAL.asException());
-                            }
+                            observer.onNext(res);
+                            observer.onCompleted();
+
                         },
                         () -> observer.onError(Status.NOT_FOUND.asException()));
     }

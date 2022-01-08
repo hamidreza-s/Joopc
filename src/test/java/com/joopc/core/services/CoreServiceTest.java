@@ -2,6 +2,7 @@ package com.joopc.core.services;
 
 import com.joopc.core.Database;
 import com.joopc.core.db.tables.Users;
+import com.joopc.core.db.tables.records.UsersRecord;
 import com.joopc.core.logics.UserLogic;
 import com.joopc.core.proto.AuthReq;
 import com.joopc.core.proto.CoreGrpc;
@@ -32,10 +33,13 @@ public class CoreServiceTest {
     public static final CoreBlockingStub blockingStub = CoreGrpc.newBlockingStub(
             grpcCleanup.register(InProcessChannelBuilder.forName(serverName).directExecutor().build()));
 
+    public static UsersRecord user;
 
     @BeforeAll
     static void cleanDatabase() throws Exception {
         Database.getContext().truncate(Users.USERS).execute();
+        user = UserLogic.create("00981111111111");
+
         grpcCleanup.register(
                 InProcessServerBuilder
                         .forName(serverName)
@@ -48,7 +52,6 @@ public class CoreServiceTest {
     @Test
     @DisplayName("Test auth service with happy path")
     void authHappyTest() {
-        var user = UserLogic.create("00981111111111");
         var authReq = AuthReq
                 .newBuilder()
                 .setUsername(user.getUsername())
@@ -56,7 +59,6 @@ public class CoreServiceTest {
                 .build();
 
         var reply = blockingStub.auth(authReq);
-
         assertFalse(reply.getToken().isEmpty());
     }
 
@@ -77,7 +79,8 @@ public class CoreServiceTest {
     @DisplayName("Test ping service")
     void pingTest() {
         var header = new Metadata();
-        header.put(Metadata.Key.of("JWT-Token", Metadata.ASCII_STRING_MARSHALLER), "JWT-Token-Value");
+        var token = Authenticator.createToken(user);
+        header.put(Authenticator.key, token);
 
         var packet = Packet
                 .newBuilder()
@@ -86,7 +89,6 @@ public class CoreServiceTest {
                 .build();
 
         var reply = blockingStub.withInterceptors(newAttachHeadersInterceptor(header)).ping(packet);
-
         assertEquals("pong", reply.getPayload());
     }
 
