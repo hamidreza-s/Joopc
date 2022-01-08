@@ -15,7 +15,7 @@ public class Database {
     private Connection connection;
     private String url = "jdbc:postgresql://localhost:5432/joopc";
     private String username = "joopc";
-    private String password = "secret";
+    private String password = "joopc";
 
     private Database() throws SQLException {
         try {

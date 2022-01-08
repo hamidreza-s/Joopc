@@ -80,7 +80,7 @@ public class CoreServiceTest {
     void pingTest() {
         var header = new Metadata();
         var token = Authenticator.createToken(user);
-        header.put(Authenticator.key, token);
+        header.put(Authenticator.tokenKey, token);
 
         var packet = Packet
                 .newBuilder()

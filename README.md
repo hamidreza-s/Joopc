@@ -20,7 +20,7 @@ postgres=# CREATE USER joopc WITH ENCRYPTED PASSWORD 'secret';
 postgres=# ALTER database joopc OWNER TO joopc;
 postgres=# GRANT ALL PRIVILEGES ON DATABASE joopc TO joopc;
 postgres=# QUIT
-$ postgres joopc -U joopc
+$ psql joopc -U joopc
 wenower=> \i ./src/main/resources/schema.sql
 ```
 
