@@ -1,15 +1,13 @@
 package com.joopc.core.services.interceptors;
 
 import com.joopc.core.Config;
+import com.joopc.core.db.tables.records.UsersRecord;
 import io.grpc.*;
+import io.grpc.ForwardingServerCall.SimpleForwardingServerCall;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 
 import java.security.Key;
-
-import com.joopc.core.db.tables.records.UsersRecord;
-import io.grpc.ForwardingServerCall.SimpleForwardingServerCall;
-
 import java.util.Date;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -60,7 +58,8 @@ public class Authenticator implements ServerInterceptor {
             var parsedToken = encryptedToken.flatMap(Authenticator::parseToken);
             if (parsedToken.isEmpty()) {
                 call.close(Status.UNAUTHENTICATED, headers);
-                return new ServerCall.Listener<>() {};
+                return new ServerCall.Listener<>() {
+                };
             } else {
                 var context = Context
                         .current()
@@ -69,6 +68,7 @@ public class Authenticator implements ServerInterceptor {
             }
         }
 
-        return next.startCall(new SimpleForwardingServerCall<>(call) {}, headers);
+        return next.startCall(new SimpleForwardingServerCall<>(call) {
+        }, headers);
     }
 }
